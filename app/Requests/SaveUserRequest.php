@@ -2,9 +2,11 @@
 
 namespace App\Requests;
 
+use App\Entity\User;
+
 class SaveUserRequest
 {
-    // todo implement
+    use ThrowsLogicException;
 
     private $id;
 
@@ -12,8 +14,9 @@ class SaveUserRequest
 
     private $email;
 
-    public function __construct(int $id, string  $name, string $email)
+    public function __construct(?int $id, string  $name, string $email)
     {
+        $this->validate($id,$name,$email);
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
@@ -32,6 +35,22 @@ class SaveUserRequest
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    private function validate(?int $id,string  $name, string $email)
+    {
+        if($id !== null && $id<=0) {
+            throw $this->makeException('id', ' greater than zero');
+        }
+        if(trim($name) == '') {
+            throw $this->makeException('name', 'not empty string');
+        }
+        if(trim($email) == '') {
+            throw $this->makeException('email', 'not empty string');
+        }
+        if(User::where('email',$email)->first()) {
+            throw $this->makeException('email', 'unique value');
+        }
     }
 }
 

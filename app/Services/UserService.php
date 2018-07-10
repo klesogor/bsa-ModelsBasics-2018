@@ -28,11 +28,13 @@ class UserService implements UserServiceInterface
 
     public function save(SaveUserRequest $request): User
     {
-        return User::find($request->getId())
-            ->update([
+       $user = User::find($request->getId()) ?? new User();
+       $user->fill([
                 'name' => $request->getName(),
                 'email' => $request->getEmail()
-            ]);
+             ])
+            ->save();
+       return $user;
     }
 
     public function delete(int $id): void

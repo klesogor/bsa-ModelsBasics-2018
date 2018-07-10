@@ -9,6 +9,8 @@
 namespace App\Services;
 
 
+use App\Entity\Currency;
+use App\Entity\User;
 use App\Entity\Wallet;
 use App\Requests\CreateWalletRequest;
 use Illuminate\Support\Collection;
@@ -18,10 +20,15 @@ class WalletService implements WalletServiceInterface
 
     public function findByUser(int $userId): ?Wallet
     {
-        return Wallet::whereHas('user',function($query)use ($userId){
+        //this one looks a bit faster, I guess
+        /*
+       $user = User::with('wallet')->find($userId);
+       return $user->wallet ?? null;
+        */
+
+        return Wallet::whereHas('user',function($query)use($userId){
             $query->where('id',$userId);
-        })
-            ->first();
+        })->first();
     }
 
     public function create(CreateWalletRequest $request): Wallet
@@ -33,6 +40,9 @@ class WalletService implements WalletServiceInterface
 
     public function findCurrencies(int $walletId): Collection
     {
-        return Wallet::find($walletId)->currencies;
+        //TO DO: try to rewrite using hasManyThrough
+        return Currency::whereHas('money',function($query) use ($walletId){
+            $query->where('wallet_id',$walletId);
+        })->get();
     }
 }
