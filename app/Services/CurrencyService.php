@@ -19,7 +19,6 @@ class CurrencyService implements CurrencyServiceInterface
     {
         return Currency::create([
                 'name' => $request->getName()
-            ]
-        );
+            ]);
     }
 }

@@ -6,7 +6,6 @@ use App\Entity\Wallet;
 
 class CreateWalletRequest
 {
-    // todo implement
     use ThrowsLogicException;
 
     private $userId;

@@ -21,10 +21,10 @@ class WalletService implements WalletServiceInterface
     public function findByUser(int $userId): ?Wallet
     {
         //this one looks a bit faster, I guess
-        /*
+        /**
        $user = User::with('wallet')->find($userId);
        return $user->wallet ?? null;
-        */
+        **/
 
         return Wallet::whereHas('user',function($query)use($userId){
             $query->where('id',$userId);
