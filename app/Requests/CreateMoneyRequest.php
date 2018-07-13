@@ -3,9 +3,10 @@
 namespace App\Requests;
 
 
+use Illuminate\Support\Facades\Validator;
+
 class CreateMoneyRequest
 {
-    use ThrowsLogicException;
 
     private $currencyId;
 
@@ -38,11 +39,9 @@ class CreateMoneyRequest
 
     private function validate(int $currencyId, int $walletId)
     {
-        if($currencyId <= 0) {
-            throw $this->makeException('currency_id', ' greater than zero');
-        }
-        if($walletId <= 0) {
-            throw $this->makeException('wallet_id', ' greater than zero');
-        }
+        $validator = Validator::make(['currency_id'=>$currencyId,'wallet_id'=>$walletId],
+            ['currency_id'=>'required|integer|min:1','wallet_id'=>'required|integer|min:1']);
+        if($validator->fails())
+            throw new \LogicException($validator->errors());
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Requests;
 
 use App\Entity\Wallet;
+use Illuminate\Support\Facades\Validator;
 
 class CreateWalletRequest
 {
-    use ThrowsLogicException;
 
     private $userId;
 
@@ -22,12 +22,10 @@ class CreateWalletRequest
     }
 
     private function validate(int $userId){
-        if($userId <= 0) {
-            throw $this->makeException('user_id', ' greater than zero');
-        }
-        if(Wallet::where('user_id',$userId)->first()){
-            throw $this->makeException('user_id', 'unique value');
-        }
+        $validator = Validator::make(['user_id'=>$userId],
+            ['user_id'=>'required|integer|min:1|unique:wallet']);
+        if($validator->fails())
+            throw new \LogicException($validator->errors());
     }
 }
 

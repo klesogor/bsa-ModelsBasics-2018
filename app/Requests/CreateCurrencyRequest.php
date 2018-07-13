@@ -2,9 +2,10 @@
 
 namespace App\Requests;
 
+use Illuminate\Support\Facades\Validator;
+
 class CreateCurrencyRequest
 {
-    use ThrowsLogicException;
 
     private $name;
 
@@ -21,8 +22,9 @@ class CreateCurrencyRequest
 
     private function validate(string $name)
     {
-        if(trim($name) == '') {
-            throw $this->makeException('name', 'not empty string');
-        }
+       $validator = Validator::make(['name'=>$name],
+           ['name=>required|string']);
+        if($validator->fails())
+            throw new \LogicException($validator->errors());
     }
 }
