@@ -3,10 +3,10 @@
 namespace App\Requests;
 
 use App\Entity\User;
+use Illuminate\Support\Facades\Validator;
 
 class SaveUserRequest
 {
-    use ThrowsLogicException;
 
     private $id;
 
@@ -39,18 +39,17 @@ class SaveUserRequest
 
     private function validate(?int $id,string  $name, string $email)
     {
-        if($id !== null && $id<=0) {
-            throw $this->makeException('id', ' greater than zero');
-        }
-        if(trim($name) == '') {
-            throw $this->makeException('name', 'not empty string');
-        }
-        if(trim($email) == '') {
-            throw $this->makeException('email', 'not empty string');
-        }
-        if(User::where('email',$email)->first()) {
-            throw $this->makeException('email', 'unique value');
-        }
+        $validator = Validator::make([
+                'id'=>$id,
+                'name'=>$name,
+                'email'=>$email],
+            [
+                'id'=>'integer|min:1|nullable',
+                'name'=>'required|string|max:255',
+                'email'=>'required|string|max:255|unique:user',
+            ]);
+        if($validator->fails())
+            throw new \LogicException($validator->errors());
     }
 }
 
